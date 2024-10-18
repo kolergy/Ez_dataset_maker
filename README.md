@@ -1,4 +1,4 @@
-# Easy Dataser Maker
+# Easy Dataset Maker
 
 This tool ams at making it easy to generate image datasets for model training for stable difusion or flux or others
 
