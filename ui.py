@@ -100,17 +100,17 @@ def gradio_interface() -> None:
 
         def save_current_crop(x_start: float, x_end: float, y_start: float, y_end: float) -> None:
             """Save the current image with crop applied"""
-            if not image_dataset_handler.file_list:
+            if not image_dataset_handler.file_list or current_index.value >= len(image_dataset_handler.file_list):
                 return
                 
             current_file = image_dataset_handler.file_list[int(current_index.value)]
             cropped = image_dataset_handler.image_tools.crop_image(x_start, x_end, y_start, y_end)
             if cropped:
-                # Get original filename and add _cropped suffix before extension
-                orig_filename = os.path.basename(current_file)
-                base_name, ext = os.path.splitext(orig_filename)
+                # Get current image filename and add _cropped suffix
+                current_filename = os.path.basename(current_file)
+                base_name, ext = os.path.splitext(current_filename)
                 new_filename = f"{base_name}_cropped{ext}"
-                # Save in same directory as original
+                # Save in same directory as current image
                 save_path = os.path.join(os.path.dirname(current_file), new_filename)
                 cropped.save(save_path)
 
