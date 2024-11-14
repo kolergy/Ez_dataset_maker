@@ -3,6 +3,7 @@ here are all the things realted to the UI of the application and ONLY the us no 
 """
 
 
+import os
 import gradio          as     gr
 
 from   typing          import Tuple, Any, List, Generator
