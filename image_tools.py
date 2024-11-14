@@ -109,9 +109,12 @@ class ImageTools:
         if isinstance(img, np.ndarray):
             img = Image.fromarray(img)
             
+        # Make a fresh copy to avoid accumulating drawings
+        img_copy = img.copy()
+        
         # Convert to RGB for drawing
-        img = img.convert('RGB')
-        draw = ImageDraw.Draw(img)
+        img_copy = img_copy.convert('RGB')
+        draw = ImageDraw.Draw(img_copy)
         
         # Calculate pixel coordinates from percentages
         width, height = img.size
@@ -123,5 +126,5 @@ class ImageTools:
         # Draw rectangle outline in white
         draw.rectangle([(x_start, y_start), (x_end, y_end)], outline='white', width=2)
         
-        return img
+        return img_copy
 
