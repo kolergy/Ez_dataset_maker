@@ -100,6 +100,28 @@ class ImageTools:
         img_base64 = b64encode(img_bytes).decode("utf-8")
         return img_base64
 
-
-
+    def draw_crop_bounds(self, img, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
+        """Draw crop boundaries on image as percentage of dimensions"""
+        from PIL import ImageDraw, Image
+        import numpy as np
+        
+        # Convert numpy array to PIL Image if needed
+        if isinstance(img, np.ndarray):
+            img = Image.fromarray(img)
+            
+        # Convert to RGB for drawing
+        img = img.convert('RGB')
+        draw = ImageDraw.Draw(img)
+        
+        # Calculate pixel coordinates from percentages
+        width, height = img.size
+        x_start = int((x_start_pct / 100.0) * width)
+        x_end = int((x_end_pct / 100.0) * width)
+        y_start = int((y_start_pct / 100.0) * height)
+        y_end = int((y_end_pct / 100.0) * height)
+        
+        # Draw rectangle outline in white
+        draw.rectangle([(x_start, y_start), (x_end, y_end)], outline='white', width=2)
+        
+        return img
 

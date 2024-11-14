@@ -58,7 +58,14 @@ def gradio_interface() -> None:
         # Move image display and navigation outside columns
         with gr.Row():
             prev_button = gr.Button("←", elem_classes="nav-button")
-            current_image_display = gr.Image(label="Current Image", height=700, width=1000)
+            with gr.Column():
+                with gr.Row():
+                    x_start_slider = gr.Slider(minimum=0, maximum=100, value=0, label="X Start %")
+                    x_end_slider = gr.Slider(minimum=0, maximum=100, value=100, label="X End %")
+                current_image_display = gr.Image(label="Current Image", height=700, width=1000)
+                with gr.Row():
+                    y_start_slider = gr.Slider(minimum=0, maximum=100, value=0, label="Y Start %")
+                    y_end_slider = gr.Slider(minimum=0, maximum=100, value=100, label="Y End %")
             next_button = gr.Button("→", elem_classes="nav-button")
             
         with gr.Row():
@@ -78,6 +85,15 @@ def gradio_interface() -> None:
         def browse_image(index: int) -> Tuple[Any, str, str]:
             image, size, caption = image_dataset_handler.load_image_at_index(index)
             return image, size, caption
+
+        def update_crop_preview(x_start, x_end, y_start, y_end):
+            """Update the crop preview overlay"""
+            current_image = image_dataset_handler.get_current_image()
+            if current_image is None:
+                return None
+            return image_dataset_handler.image_tools.draw_crop_bounds(
+                current_image, x_start, x_end, y_start, y_end
+            )
 
         def next_image(current_idx: int) -> Tuple[int, Any, str, str]:
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
@@ -140,6 +156,12 @@ def gradio_interface() -> None:
         caption_prompt.change(         fn=image_dataset_handler.set_caption_prompt              , inputs=caption_prompt,          outputs=[])
         file_name_in_context.change(   fn=image_dataset_handler.set_file_name_in_context        , inputs=file_name_in_context,    outputs=[])
         dir_name_in_context.change(    fn=image_dataset_handler.set_dir_name_in_context         , inputs=dir_name_in_context,     outputs=[])
+
+        # Wire up crop boundary preview updates
+        x_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        x_end_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        y_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        y_end_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
         
         def initiate_image_processing() -> Generator[Tuple[int, int, int, str, str, Any, str, str], None, None]:
             """Initiates the image processing workflow and yields progress updates."""
