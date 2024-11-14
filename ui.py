@@ -15,7 +15,22 @@ def gradio_interface() -> None:
     image_dataset_handler = DatasetHandler()
     image_captioner       = image_dataset_handler.image_captioner
     valid_models          = image_captioner.valid_models
-    with gr.Blocks() as demo:
+    with gr.Blocks(css="""
+        .nav-button {
+            max-width: 50px !important;
+            min-width: 50px !important;
+            height: 300px !important;
+            border-radius: 25px !important;
+            font-size: 24px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: rgba(0,0,0,0.1) !important;
+        }
+        .nav-button:hover {
+            background-color: rgba(0,0,0,0.2) !important;
+        }
+    """) as demo:
         gr.Markdown("# Image Batch Downsampler and Captioner")
         with gr.Row():
             with gr.Column():
@@ -39,13 +54,15 @@ def gradio_interface() -> None:
                     initial_images     = gr.Textbox(label="Initial number of images to be treated", value="0")
                     remaining_images   = gr.Textbox(label="Remaining number of images to treat", value="0")
                 
-                with gr.Row():
-                    prev_button        = gr.Button("Previous")
-                    current_index      = gr.Number(value=0, label="Current Image Index", interactive=True)
-                    next_button        = gr.Button("Next")
-                
-                current_image_display  = gr.Image(label="Current Image", height=500)
-                image_size_display     = gr.Textbox(label="Image Size", value="", interactive=False)
+                current_index      = gr.Number(value=0, label="Current Image Index", interactive=True)
+        # Move image display and navigation outside columns
+        with gr.Row():
+            prev_button = gr.Button("←", elem_classes="nav-button")
+            current_image_display = gr.Image(label="Current Image", height=700, width=1000)
+            next_button = gr.Button("→", elem_classes="nav-button")
+            
+        with gr.Row():
+            image_size_display     = gr.Textbox(label="Image Size", value="", interactive=False)
                 caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
                 caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
                 console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
