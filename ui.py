@@ -106,10 +106,12 @@ def gradio_interface() -> None:
             current_file = image_dataset_handler.file_list[int(current_index.value)]
             cropped = image_dataset_handler.image_tools.crop_image(x_start, x_end, y_start, y_end)
             if cropped:
-                # Save with _cropped suffix
-                save_path = os.path.join(os.path.dirname(current_file), 
-                                       os.path.splitext(os.path.basename(current_file))[0] + "_cropped" + 
-                                       os.path.splitext(current_file)[1])
+                # Get original filename and add _cropped suffix before extension
+                orig_filename = os.path.basename(current_file)
+                base_name, ext = os.path.splitext(orig_filename)
+                new_filename = f"{base_name}_cropped{ext}"
+                # Save in same directory as original
+                save_path = os.path.join(os.path.dirname(current_file), new_filename)
                 cropped.save(save_path)
 
         def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str]:
