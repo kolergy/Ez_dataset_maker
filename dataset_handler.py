@@ -66,6 +66,26 @@ class DatasetHandler:
             return img
         else:
             return self.image_tools.initial_image
+            
+    def load_image_at_index(self, index: int) -> Tuple[Image.Image, str, str]:
+        """Loads and returns image, size and caption at given index"""
+        if 0 <= index < len(self.file_list):
+            file_path = self.file_list[index]
+            self.image_tools.load(file_path, self.handle_very_large_image)
+            self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
+            
+            current_image = self.get_current_image()
+            image_size = f"{current_image.width}x{current_image.height}"
+            
+            # Try to read existing caption if any
+            caption = ""
+            caption_path = str(Path(file_path).with_suffix('.txt'))
+            if os.path.exists(caption_path):
+                with open(caption_path, 'r') as f:
+                    caption = f.read().strip()
+                    
+            return current_image, image_size, caption
+        return None, "", ""
 
     def clean_file_list(self, input_file_list: List[str], keep_type: str = 'image') -> List[str]:
         """Strips the file list to keep only files of the desired type."""

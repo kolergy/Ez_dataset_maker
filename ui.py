@@ -34,18 +34,43 @@ def gradio_interface() -> None:
                 start_button            = gr.Button(       "Start"                                                                               )
 
             with gr.Column():
-                total_files             = gr.Textbox( label = "Number of files selected",               value="0" )
-                initial_images          = gr.Textbox( label = "Initial number of images to be treated", value="0" )
-                remaining_images        = gr.Textbox( label = "Remaining number of images to treat",    value="0" )
-                current_image_display   = gr.Image(   label = "Current Image",                                    visible = True )
-                image_size_display      = gr.Textbox( label = "Image Size",                             value="", visible = True,           interactive=False )
-                caption_output          = gr.Textbox( label = "Generated Caption",                      value="", visible = False, lines=5, interactive=True  )
-                caption_text_display    = gr.Textbox( label = "Caption Text",                           value="", visible = True,           interactive=False )
-                console_output          = gr.Textbox( label = "Console Output",                                                    lines=5, interactive=False )
+                with gr.Row():
+                    total_files        = gr.Textbox(label="Number of files selected", value="0")
+                    initial_images     = gr.Textbox(label="Initial number of images to be treated", value="0")
+                    remaining_images   = gr.Textbox(label="Remaining number of images to treat", value="0")
+                
+                with gr.Row():
+                    prev_button        = gr.Button("Previous")
+                    current_index      = gr.Number(value=0, label="Current Image Index", interactive=True)
+                    next_button        = gr.Button("Next")
+                
+                current_image_display  = gr.Image(label="Current Image", height=500)
+                image_size_display     = gr.Textbox(label="Image Size", value="", interactive=False)
+                caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
+                caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
+                console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
 
-        def update_file_count(selected_files: List[str]) -> Tuple[int, int, int]:
+        def update_file_count(selected_files: List[str]) -> Tuple[int, int, int, Any, str, str]:
             image_dataset_handler.set_file_list(selected_files)
-            return len(selected_files), len(selected_files), len(selected_files)
+            count = len(image_dataset_handler.file_list)
+            if count > 0:
+                image, size, caption = image_dataset_handler.load_image_at_index(0)
+                return count, count, count, image, size, caption
+            return 0, 0, 0, None, "", ""
+
+        def browse_image(index: int) -> Tuple[Any, str, str]:
+            image, size, caption = image_dataset_handler.load_image_at_index(index)
+            return image, size, caption
+
+        def next_image(current_idx: int) -> Tuple[int, Any, str, str]:
+            next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
+            image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
+            return next_idx, image, size, caption
+
+        def prev_image(current_idx: int) -> Tuple[int, Any, str, str]:
+            prev_idx = max(current_idx - 1, 0)
+            image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
+            return prev_idx, image, size, caption
 
         def toggle_caption_prompt(checkbox: bool) -> gr.update:
             image_dataset_handler.set_image_captioner_enabled_flag(checkbox)
@@ -62,7 +87,29 @@ def gradio_interface() -> None:
         def set_caption_model(model_type: str) -> None:                                                                                                                                                                                                          
             image_captioner.set_caption_model(model_type)  
 
-        file_explorer.change(fn=update_file_count, inputs=file_explorer, outputs=[total_files, initial_images, remaining_images])
+        file_explorer.change(
+            fn=update_file_count,
+            inputs=file_explorer,
+            outputs=[total_files, initial_images, remaining_images, current_image_display, image_size_display, caption_text_display]
+        )
+        
+        current_index.change(
+            fn=browse_image,
+            inputs=[current_index],
+            outputs=[current_image_display, image_size_display, caption_text_display]
+        )
+        
+        next_button.click(
+            fn=next_image,
+            inputs=[current_index],
+            outputs=[current_index, current_image_display, image_size_display, caption_text_display]
+        )
+        
+        prev_button.click(
+            fn=prev_image,
+            inputs=[current_index],
+            outputs=[current_index, current_image_display, image_size_display, caption_text_display]
+        )
         caption_checkbox.change(fn=toggle_caption_prompt, inputs=caption_checkbox, outputs=[caption_prompt, caption_model_selector, caption_checkbox])
         
         # Update settings when UI elements change
