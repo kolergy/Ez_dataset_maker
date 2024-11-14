@@ -151,6 +151,11 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# Aider stufd
+.aider*
+aider*
+conventions.md
+
 # Cython debug symbols
 cython_debug/
 

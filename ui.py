@@ -127,7 +127,7 @@ def gradio_interface() -> None:
 
         demo.load(lambda: "", outputs=[console_output])
 
-    demo.launch(share=True)
+    demo.launch(share=False)
 
 if __name__ == "__main__":
     gradio_interface()
