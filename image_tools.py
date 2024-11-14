@@ -100,6 +100,33 @@ class ImageTools:
         img_base64 = b64encode(img_bytes).decode("utf-8")
         return img_base64
 
+    def crop_image(self, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
+        """Crop the current image using percentage bounds"""
+        if not self.down_sampled:
+            return None
+            
+        width, height = self.down_sampled.size
+        x_start = int((x_start_pct / 100.0) * width)
+        x_end = int((x_end_pct / 100.0) * width)
+        y_start = int((y_start_pct / 100.0) * height)
+        y_end = int((y_end_pct / 100.0) * height)
+        
+        # Ensure valid crop coordinates
+        x_start = max(0, min(x_start, width))
+        x_end = max(0, min(x_end, width))
+        y_start = max(0, min(y_start, height))
+        y_end = max(0, min(y_end, height))
+        
+        # Create crop box ensuring end > start
+        crop_box = (
+            min(x_start, x_end),
+            min(y_start, y_end),
+            max(x_start, x_end),
+            max(y_start, y_end)
+        )
+        
+        return self.down_sampled.crop(crop_box)
+
     def draw_crop_bounds(self, img, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
         """Draw crop boundaries on image as percentage of dimensions"""
         from PIL import ImageDraw, Image

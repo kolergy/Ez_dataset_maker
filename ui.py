@@ -95,12 +95,32 @@ def gradio_interface() -> None:
                 current_image, x_start, x_end, y_start, y_end
             )
 
-        def next_image(current_idx: int) -> Tuple[int, Any, str, str]:
+        def save_current_crop(x_start: float, x_end: float, y_start: float, y_end: float) -> None:
+            """Save the current image with crop applied"""
+            if not image_dataset_handler.file_list:
+                return
+                
+            current_file = image_dataset_handler.file_list[int(current_index.value)]
+            cropped = image_dataset_handler.image_tools.crop_image(x_start, x_end, y_start, y_end)
+            if cropped:
+                # Save with _cropped suffix
+                save_path = os.path.join(os.path.dirname(current_file), 
+                                       os.path.splitext(os.path.basename(current_file))[0] + "_cropped" + 
+                                       os.path.splitext(current_file)[1])
+                cropped.save(save_path)
+
+        def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str]:
+            # Save crop of current image before moving
+            save_current_crop(x_start, x_end, y_start, y_end)
+            
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
             return next_idx, image, size, caption
 
-        def prev_image(current_idx: int) -> Tuple[int, Any, str, str]:
+        def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str]:
+            # Save crop of current image before moving
+            save_current_crop(x_start, x_end, y_start, y_end)
+            
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
             return prev_idx, image, size, caption
@@ -134,13 +154,13 @@ def gradio_interface() -> None:
         
         next_button.click(
             fn=next_image,
-            inputs=[current_index],
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display]
         )
         
         prev_button.click(
             fn=prev_image,
-            inputs=[current_index],
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display]
         )
         caption_checkbox.change(fn=toggle_caption_prompt, inputs=caption_checkbox, outputs=[caption_prompt, caption_model_selector, caption_checkbox])
