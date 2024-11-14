@@ -63,9 +63,9 @@ def gradio_interface() -> None:
             
         with gr.Row():
             image_size_display     = gr.Textbox(label="Image Size", value="", interactive=False)
-                caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
-                caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
-                console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
+            caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
+            caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
+            console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
 
         def update_file_count(selected_files: List[str]) -> Tuple[int, int, int, Any, str, str]:
             image_dataset_handler.set_file_list(selected_files)
