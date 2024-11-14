@@ -36,24 +36,23 @@ def gradio_interface() -> None:
         with gr.Row():
             with gr.Column():
                 file_explorer           = gr.FileExplorer( file_count = "multiple",                 interactive = True                           )
-                handle_very_large_image = gr.Checkbox(     label      = "Handle very large images", value       = False                          )
-                target_size             = gr.Number(       label      = "Target Size",              value       = 1024                           )
-                smallest_side           = gr.Checkbox(     label      = "Apply to smallest side",   value       = True                           )
-                postfix_string          = gr.Textbox(      label      = "Postfix String",           value       = "re_sampled"                   )
-                format_selector         = gr.Dropdown(     label      = "Output Format",            choices     = ["PNG", "jpeg"], value = "PNG" )
-                caption_model_selector  = gr.Dropdown(     label      = "Caption Model Type",       value       = "xgen", choices=valid_models   )                        
-                caption_checkbox        = gr.Checkbox(     label      = "Generate caption",         value       = False                          )
-                file_name_in_context    = gr.Checkbox(     label      = "add file name to context", value       = False                          )
-                dir_name_in_context     = gr.Checkbox(     label      = "add dir name to context",  value       = False                          )
-                
-                caption_prompt          = gr.Textbox(      label      = "Caption prompt",           value       = "Provide a detailed image caption with tags separated by commas.")#, visible = False )
                 start_button            = gr.Button(       "Start"                                                                               )
 
             with gr.Column():
                 with gr.Row():
-                    total_files        = gr.Textbox(label="Number of files selected", value="0")
-                    initial_images     = gr.Textbox(label="Initial number of images to be treated", value="0")
-                    remaining_images   = gr.Textbox(label="Remaining number of images to treat", value="0")
+                    handle_very_large_image = gr.Checkbox(     label      = "Handle very large images", value       = False                          )
+                    target_size             = gr.Number(       label      = "Target Size",              value       = 1024                           )
+                    smallest_side           = gr.Checkbox(     label      = "Apply to smallest side",   value       = True                           )
+                    postfix_string          = gr.Textbox(      label      = "Postfix String",           value       = "re_sampled"                   )
+                    format_selector         = gr.Dropdown(     label      = "Output Format",            choices     = ["PNG", "jpeg"], value = "PNG" )
+                    caption_model_selector  = gr.Dropdown(     label      = "Caption Model Type",       value       = "xgen", choices=valid_models   )                        
+                    caption_checkbox        = gr.Checkbox(     label      = "Generate caption",         value       = False                          )
+                    file_name_in_context    = gr.Checkbox(     label      = "add file name to context", value       = False                          )
+                    dir_name_in_context     = gr.Checkbox(     label      = "add dir name to context",  value       = False                          )
+                    
+                    caption_prompt          = gr.Textbox(      label      = "Caption prompt",           value       = "Provide a detailed image caption with tags separated by commas.")#, visible = False )
+
+
                 
                 current_index      = gr.Number(value=0, label="Current Image Index", interactive=True)
         # Move image display and navigation outside columns
@@ -74,6 +73,9 @@ def gradio_interface() -> None:
             caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
             caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
             console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
+            total_files        = gr.Textbox(label="Number of files selected", value="0")
+            initial_images     = gr.Textbox(label="Initial number of images to be treated", value="0")
+            remaining_images   = gr.Textbox(label="Remaining number of images to treat", value="0")
 
         def update_file_count(selected_files: List[str]) -> Tuple[int, int, int, Any, str, str]:
             image_dataset_handler.set_file_list(selected_files)
