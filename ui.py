@@ -99,10 +99,11 @@ def gradio_interface() -> None:
             y_end   = max(y_start+1, y_end)
             current_image = image_dataset_handler.get_current_image()
             if current_image is None:
-                return None
-            return image_dataset_handler.image_tools.draw_crop_bounds(
+                return None, x_start, x_end, y_start, y_end
+            updated_image = image_dataset_handler.image_tools.draw_crop_bounds(
                 current_image, x_start, x_end, y_start, y_end
             )
+            return updated_image, x_start, x_end, y_start, y_end
 
         def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float) -> None:
             """Updates the crop values in the dataset handler; and ensure we have a rectangle > 0."""
@@ -183,22 +184,22 @@ def gradio_interface() -> None:
         x_start_slider.change(
             fn=update_crop_preview,
             inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=current_image_display
+            outputs=[current_image_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
         )
         x_end_slider.change(
             fn=update_crop_preview,
             inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=current_image_display
+            outputs=[current_image_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
         )
         y_start_slider.change(
             fn=update_crop_preview,
             inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=current_image_display
+            outputs=[current_image_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
         )
         y_end_slider.change(
             fn=update_crop_preview,
             inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=current_image_display
+            outputs=[current_image_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
         )
         
         # Wire up crop value updates
