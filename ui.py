@@ -85,10 +85,11 @@ def gradio_interface() -> None:
                 return count, count, count, image, size, caption
             return 0, 0, 0, None, "", ""
 
-        def browse_image(index: int) -> Tuple[Any, str, str, float, float, float, float]:
+        def browse_image(index: int) -> Tuple[Any, str, str, float, float, float, float, Any]:
             image, size, caption = image_dataset_handler.load_image_at_index(index)
             crop_values = image_dataset_handler.get_crop_values_at_index(index)
-            return image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"]
+            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
+            return image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def update_crop_preview(x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
@@ -100,21 +101,23 @@ def gradio_interface() -> None:
             )
 
 
-        def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float]:
+        def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             # Save crop of current image before moving
             
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
             crop_values = image_dataset_handler.get_crop_values_at_index(next_idx)
-            return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"]
+            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
+            return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
-        def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float]:
+        def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             # Save crop of current image before moving
             
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
             crop_values = image_dataset_handler.get_crop_values_at_index(prev_idx)
-            return prev_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"]
+            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
+            return prev_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def toggle_caption_prompt(checkbox: bool) -> gr.update:
             image_dataset_handler.set_image_captioner_enabled_flag(checkbox)
@@ -140,19 +143,19 @@ def gradio_interface() -> None:
         current_index.change(
             fn=browse_image,
             inputs=[current_index],
-            outputs=[current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
+            outputs=[current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
         
         next_button.click(
             fn=next_image,
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
+            outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
         
         prev_button.click(
             fn=prev_image,
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider]
+            outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
         caption_checkbox.change(fn=toggle_caption_prompt, inputs=caption_checkbox, outputs=[caption_prompt, caption_model_selector, caption_checkbox])
         
