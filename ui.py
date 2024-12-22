@@ -91,14 +91,16 @@ def gradio_interface() -> None:
             updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
             return image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
-        def update_crop_preview(x_start, x_end, y_start, y_end, code_triggered_flag=False):
+        def update_crop_preview(index: int, x_start, x_end, y_start, y_end, code_triggered_flag=False):
             """Update the crop preview overlay"""
-            current_image = image_dataset_handler.get_current_image()
-            if current_image is None:
-                return None
-            updated_image = image_dataset_handler.image_tools.draw_crop_bounds(
-                current_image, x_start, x_end, y_start, y_end
-            )
+            if not code_triggered_flag:
+                current_image = image_dataset_handler.get_current_image()
+                if current_image is None:
+                    return None
+                updated_image = image_dataset_handler.image_tools.draw_crop_bounds(
+                    current_image, x_start, x_end, y_start, y_end
+                )
+                image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
             return updated_image
 
         def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float, code_triggered_flag=False) -> None:
@@ -180,46 +182,24 @@ def gradio_interface() -> None:
 
         # Wire up crop boundary preview updates
         x_start_slider.change(
-            fn=lambda x_start, x_end, y_start, y_end: update_crop_preview(x_start, x_end, y_start, y_end),
-            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_image_display]
         )
         x_end_slider.change(
-            fn=lambda x_start, x_end, y_start, y_end: update_crop_preview(x_start, x_end, y_start, y_end),
-            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_image_display]
         )
         y_start_slider.change(
-            fn=lambda x_start, x_end, y_start, y_end: update_crop_preview(x_start, x_end, y_start, y_end),
-            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_image_display]
         )
         y_end_slider.change(
-            fn=lambda x_start, x_end, y_start, y_end: update_crop_preview(x_start, x_end, y_start, y_end),
-            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_image_display]
-        )
-        
-        # Wire up crop value updates
-        x_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_values(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[]
-        )
-        x_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_values(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[]
-        )
-        y_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_values(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[]
-        )
-        y_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_values(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
-            outputs=[]
         )
         
         def initiate_image_processing() -> Generator[Tuple[int, int, int, str, str, Any, str, str], None, None]:

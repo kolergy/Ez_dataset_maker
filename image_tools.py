@@ -26,6 +26,7 @@ class ImageTools:
         self.handle_very_large_image = False
         self.initial_image           = None
         self.down_sampled            = None
+        self.cropped_initial_image   = None
 
 
     def load(self, path: Union[str, os.PathLike], handle_very_large_image: bool = False):
@@ -51,23 +52,28 @@ class ImageTools:
 
     def down_sample_fix_AR(self, target_size: int, smallest_side: bool) -> None:
         """Downsamples the image while preserving the aspect ratio."""
-        if smallest_side:
-            if self.initial_image.width < self.initial_image.height:
-                new_width  = target_size
-                new_height = int((new_width / self.initial_image.width) * self.initial_image.height)
-            else:
-                new_height = target_size
-                new_width  = int((new_height / self.initial_image.height) * self.initial_image.width)
+        if self.cropped_initial_image:
+            working_image = self.cropped_initial_image
         else:
-            if self.initial_image.width > self.initial_image.height:
+            working_image = self.initial_image
+
+        if smallest_side:
+            if working_image.width < working_image.height:
                 new_width  = target_size
-                new_height = int((new_width / self.initial_image.width) * self.initial_image.height)
+                new_height = int((new_width / working_image.width) * working_image.height)
             else:
                 new_height = target_size
-                new_width  = int((new_height / self.initial_image.height) * self.initial_image.width)
+                new_width  = int((new_height / working_image.height) * working_image.width)
+        else:
+            if working_image.width > working_image.height:
+                new_width  = target_size
+                new_height = int((new_width / working_image.width) * working_image.height)
+            else:
+                new_height = target_size
+                new_width  = int((new_height / working_image.height) * working_image.width)
 
         # Downsample using bicubic resampling
-        self.down_sampled = self.initial_image.resize((new_width, new_height), Image.BICUBIC)
+        self.down_sampled = working_image.resize((new_width, new_height), Image.BICUBIC)
 
     def get_file_name(self) -> str:
         """Returns the file name."""
@@ -100,32 +106,23 @@ class ImageTools:
         img_base64 = b64encode(img_bytes).decode("utf-8")
         return img_base64
 
-    def crop_image(self, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
+    def crop_image(self, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> None:
         """Crop the current image using percentage bounds"""
-        if not self.down_sampled:
-            return None
-            
-        width, height = self.down_sampled.size
-        x_start = int((x_start_pct / 100.0) * width)
-        x_end = int((x_end_pct / 100.0) * width)
-        y_start = int((y_start_pct / 100.0) * height)
-        y_end = int((y_end_pct / 100.0) * height)
+        if x_start_pct==0 and x_end_pct==100 and y_start_pct==0 and y_end_pct==100:
+            self.cropped_initial_image  = self.initial_image
+            return
         
-        # Ensure valid crop coordinates
-        x_start = max(0, min(x_start, width))
-        x_end = max(0, min(x_end, width))
-        y_start = max(0, min(y_start, height))
-        y_end = max(0, min(y_end, height))
-        
-        # Create crop box ensuring end > start
-        crop_box = (
-            min(x_start, x_end),
-            min(y_start, y_end),
-            max(x_start, x_end),
-            max(y_start, y_end)
-        )
-        
-        return self.down_sampled.crop(crop_box)
+        width, height = self.initial_image.size
+        print(f"width: {width}, height: {height}")
+        x_start  = int((x_start_pct / 100.0) * width )
+        x_end    = int((x_end_pct   / 100.0) * width )
+        y_start  = int((y_start_pct / 100.0) * height)
+        y_end    = int((y_end_pct   / 100.0) * height)
+        crop_box = (x_start, y_start, x_end, y_end   )
+        print(f"crop_box: {crop_box}")
+        self.cropped_initial_image  = self.initial_image.crop(crop_box)
+        print(f"cropped_image.size: {self.cropped_initial_image.size}")
+
 
     def draw_crop_bounds(self, img, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
         """Draw crop boundaries on image as percentage of dimensions"""
@@ -143,15 +140,15 @@ class ImageTools:
         img_copy = img.copy()
         
         # Convert to RGB for drawing
-        img_copy = img_copy.convert('RGB')
+        #img_copy = img_copy.convert('RGB')
         draw = ImageDraw.Draw(img_copy)
         
         # Calculate pixel coordinates from percentages
         width, height = img.size
-        x_start = int((x_start_pct / 100.0) * width)
-        x_end = int((x_end_pct / 100.0) * width)
+        x_start = int((x_start_pct / 100.0) * width )
+        x_end   = int((x_end_pct   / 100.0) * width )
         y_start = int((y_start_pct / 100.0) * height)
-        y_end = int((y_end_pct / 100.0) * height)
+        y_end   = int((y_end_pct   / 100.0) * height)
         
         # Draw rectangle outline in white
         draw.rectangle([(x_start, y_start), (x_end, y_end)], outline='white', width=2)

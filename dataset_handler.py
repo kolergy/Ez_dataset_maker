@@ -84,6 +84,7 @@ class DatasetHandler:
         self.dir_name_in_context = value
 
     def get_current_image(self) -> Image:
+        """Returns the current image for display perf if possible get the lower resolution."""
         img = self.image_tools.down_sampled
         if img:
             return img
@@ -143,14 +144,13 @@ class DatasetHandler:
             
             # Crop the image
             crop_values = self.crop_list[index]
-            cropped_image = self.image_tools.crop_image(
+            print(f"Finally cropping with values: {crop_values}")
+            self.image_tools.crop_image(
                 crop_values["min_x"],
                 crop_values["max_x"],
                 crop_values["min_y"],
                 crop_values["max_y"]
             )
-            self.image_tools.down_sampled = cropped_image
-            
             self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
             
             save_path = os.path.join(output_dir, file_name)
