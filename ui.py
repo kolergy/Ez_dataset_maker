@@ -60,22 +60,22 @@ def gradio_interface() -> None:
             prev_button = gr.Button("←", elem_classes="nav-button")
             with gr.Column():
                 with gr.Row():
-                    x_start_slider = gr.Slider(minimum=0, maximum=100, value=0, label="X Start %")
-                    x_end_slider = gr.Slider(minimum=0, maximum=100, value=100, label="X End %")
+                    x_start_slider    = gr.Slider(minimum=0, maximum=100, value=0,   label="X Start %")
+                    x_end_slider      = gr.Slider(minimum=0, maximum=100, value=100, label="X End %")
                 current_image_display = gr.Image(label="Current Image", height=700, width=1000)
                 with gr.Row():
-                    y_start_slider = gr.Slider(minimum=0, maximum=100, value=0, label="Y Start %")
-                    y_end_slider = gr.Slider(minimum=0, maximum=100, value=100, label="Y End %")
+                    y_start_slider    = gr.Slider(minimum=0, maximum=100, value=0,   label="Y Start %")
+                    y_end_slider      = gr.Slider(minimum=0, maximum=100, value=100, label="Y End %")
             next_button = gr.Button("→", elem_classes="nav-button")
             
         with gr.Row():
-            image_size_display     = gr.Textbox(label="Image Size", value="", interactive=False)
-            caption_output         = gr.Textbox(label="Generated Caption", value="", visible=False, lines=5, interactive=True)
-            caption_text_display   = gr.Textbox(label="Caption Text", value="", lines=3, interactive=False)
-            console_output         = gr.Textbox(label="Console Output", lines=5, interactive=False)
-            total_files        = gr.Textbox(label="Number of files selected", value="0")
-            initial_images     = gr.Textbox(label="Initial number of images to be treated", value="0")
-            remaining_images   = gr.Textbox(label="Remaining number of images to treat", value="0")
+            image_size_display     = gr.Textbox(label="Image Size",                             value="", interactive=False)
+            caption_output         = gr.Textbox(label="Generated Caption",                      value="", visible=False, lines=5, interactive=True)
+            caption_text_display   = gr.Textbox(label="Caption Text",                           value="", lines=3, interactive=False)
+            console_output         = gr.Textbox(label="Console Output",                                   lines=5, interactive=False)
+            total_files            = gr.Textbox(label="Number of files selected",               value="0")
+            initial_images         = gr.Textbox(label="Initial number of images to be treated", value="0")
+            remaining_images       = gr.Textbox(label="Remaining number of images to treat",    value="0")
 
         def update_file_count(selected_files: List[str]) -> Tuple[int, int, int, Any, str, str]:
             image_dataset_handler.set_file_list(selected_files)
@@ -104,7 +104,7 @@ def gradio_interface() -> None:
                 return
                 
             current_file = image_dataset_handler.file_list[int(current_index.value)]
-            cropped = image_dataset_handler.image_tools.crop_image(x_start, x_end, y_start, y_end)
+            cropped      = image_dataset_handler.image_tools.crop_image(x_start, x_end, y_start, y_end)
             if cropped:
                 # Get current image filename and add _cropped suffix
                 current_filename = os.path.basename(current_file)
@@ -184,9 +184,9 @@ def gradio_interface() -> None:
 
         # Wire up crop boundary preview updates
         x_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
-        x_end_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        x_end_slider.change(  fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
         y_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
-        y_end_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        y_end_slider.change(  fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
         
         def initiate_image_processing() -> Generator[Tuple[int, int, int, str, str, Any, str, str], None, None]:
             """Initiates the image processing workflow and yields progress updates."""
