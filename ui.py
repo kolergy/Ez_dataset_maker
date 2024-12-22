@@ -102,6 +102,10 @@ def gradio_interface() -> None:
 
         def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float) -> None:
             """Updates the crop values in the dataset handler."""
+            x_start = min(x_start, x_end)
+            x_end   = max(x_start, x_end)
+            y_start = min(y_start, y_end)
+            y_end   = max(y_start, y_end)
             image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
 
 
