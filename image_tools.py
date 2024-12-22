@@ -132,6 +132,9 @@ class ImageTools:
         from PIL import ImageDraw, Image
         import numpy as np
         
+        if img is None:
+            return None
+        
         # Convert numpy array to PIL Image if needed
         if isinstance(img, np.ndarray):
             img = Image.fromarray(img)
