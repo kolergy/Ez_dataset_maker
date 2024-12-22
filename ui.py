@@ -93,10 +93,6 @@ def gradio_interface() -> None:
 
         def update_crop_preview(x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
-            x_start = min(x_start, x_end-1)
-            x_end   = max(x_start+1, x_end)
-            y_start = min(y_start, y_end-1)
-            y_end   = max(y_start+1, y_end)
             current_image = image_dataset_handler.get_current_image()
             if current_image is None:
                 return None, x_start, x_end, y_start, y_end
