@@ -5,7 +5,7 @@ Here are all the means to manipulmate the dataset
 
 
 import os
-from   typing      import List, Any, Generator, Tuple
+from   typing      import List, Any, Generator, Tuple, Dict
 from   pathlib     import Path
 from   PIL         import Image
 from   image_tools import ImageTools
@@ -26,9 +26,16 @@ class DatasetHandler:
         self.image_captioner               = ImageCaptioner(self.image_tools)
         self.file_name_in_context: bool    = False
         self.dir_name_in_context: bool     = False
+        self.crop_list: List[Dict[str, float]] = []
 
     def set_file_list(self, file_list: List[str]):
         self.file_list = self.clean_file_list(file_list)
+        self.crop_list = [{
+            "min_x": 0.0,
+            "max_x": 100.0,
+            "min_y": 0.0,
+            "max_y": 100.0
+        } for _ in self.file_list]
 
     def set_handle_very_large_image(self, value: bool):
         self.handle_very_large_image = value
@@ -115,11 +122,22 @@ class DatasetHandler:
         
         
 
-        for file in self.file_list:
+        for index, file in enumerate(self.file_list):
             debug_print(f"Processing file: {file}")
             file_name = Path(file).name
             self.image_tools.load(file, self.handle_very_large_image)
             self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
+            
+            # Crop the image
+            crop_values = self.crop_list[index]
+            cropped_image = self.image_tools.crop_image(
+                crop_values["min_x"],
+                crop_values["max_x"],
+                crop_values["min_y"],
+                crop_values["max_y"]
+            )
+            self.image_tools.down_sampled = cropped_image
+            
             save_path = os.path.join(output_dir, file_name)
             new_path  = self.image_tools.save(save_path, self.postfix_string, self.format)
             remaining_images -= 1
