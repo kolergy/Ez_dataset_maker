@@ -100,6 +100,10 @@ def gradio_interface() -> None:
                 current_image, x_start, x_end, y_start, y_end
             )
 
+        def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float) -> None:
+            """Updates the crop values in the dataset handler."""
+            image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
+
 
         def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             # Save crop of current image before moving
@@ -172,10 +176,48 @@ def gradio_interface() -> None:
         dir_name_in_context.change(    fn=image_dataset_handler.set_dir_name_in_context         , inputs=dir_name_in_context,     outputs=[])
 
         # Wire up crop boundary preview updates
-        x_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
-        x_end_slider.change(  fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
-        y_start_slider.change(fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
-        y_end_slider.change(  fn=update_crop_preview, inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider], outputs=current_image_display)
+        x_start_slider.change(
+            fn=update_crop_preview,
+            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=current_image_display
+        )
+        x_end_slider.change(
+            fn=update_crop_preview,
+            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=current_image_display
+        )
+        y_start_slider.change(
+            fn=update_crop_preview,
+            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=current_image_display
+        )
+        y_end_slider.change(
+            fn=update_crop_preview,
+            inputs=[x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=current_image_display
+        )
+        
+        # Wire up crop value updates
+        x_start_slider.change(
+            fn=update_crop_values,
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=[]
+        )
+        x_end_slider.change(
+            fn=update_crop_values,
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=[]
+        )
+        y_start_slider.change(
+            fn=update_crop_values,
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=[]
+        )
+        y_end_slider.change(
+            fn=update_crop_values,
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            outputs=[]
+        )
         
         def initiate_image_processing() -> Generator[Tuple[int, int, int, str, str, Any, str, str], None, None]:
             """Initiates the image processing workflow and yields progress updates."""

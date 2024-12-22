@@ -43,6 +43,16 @@ class DatasetHandler:
             return self.crop_list[index]
         return {"min_x": 0.0, "max_x": 100.0, "min_y": 0.0, "max_y": 100.0}
 
+    def set_crop_values_at_index(self, index: int, min_x: float, max_x: float, min_y: float, max_y: float) -> None:
+        """Sets the crop values at the given index."""
+        if 0 <= index < len(self.crop_list):
+            self.crop_list[index] = {
+                "min_x": min_x,
+                "max_x": max_x,
+                "min_y": min_y,
+                "max_y": max_y
+            }
+
     def set_handle_very_large_image(self, value: bool):
         self.handle_very_large_image = value
 
