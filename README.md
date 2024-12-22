@@ -5,7 +5,8 @@ This tool ams at making it easy to generate image datasets for model training fo
 For now it is able to
  - Select image in the working folder and sub folder (need to improve that)
  - Define a target size to be applied to small size or large size (this will keep the original image aspect ratio, most model just have size limitation )
- - Select an output format (most model need all images to be the same format) 
+ - Select an output format (most model need all images to be the same format)
+ - Simple cropping abilities
  - Ability to generate caption text for the images  with the folowing models:
     - blip  - The good old blip model. It has a low VRAM requirement but dose not use prompt
     - xgen  - The new name of blip-3 much more capable  
@@ -23,7 +24,7 @@ Test Images are from Wikimedia Commons
  - Add the possibility to unload models and reload new ones
  - Find a way to load Molmo in 8b or less
  - Add the possibility of images viewing and zooming
- - Add the possiblilty of image cropping 
+ - Improve the possiblilty of image cropping 
 
 
 
