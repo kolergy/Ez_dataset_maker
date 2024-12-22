@@ -96,7 +96,7 @@ class DatasetHandler:
             if os.path.exists(caption_path):
                 with open(caption_path, 'r') as f:
                     caption = f.read().strip()
-                    
+            
             return current_image, image_size, caption
         return None, "", "",
 
