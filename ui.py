@@ -182,23 +182,23 @@ def gradio_interface() -> None:
 
         # Wire up crop boundary preview updates
         x_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         x_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         y_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         y_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end: update_crop_preview(index, x_start, x_end, y_start, y_end),
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         
