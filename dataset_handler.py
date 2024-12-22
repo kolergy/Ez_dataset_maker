@@ -136,8 +136,6 @@ class DatasetHandler:
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         
-        
-
         for index, file in enumerate(self.file_list):
             debug_print(f"Processing file: {file}")
             file_name = Path(file).name
