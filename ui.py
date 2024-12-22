@@ -93,6 +93,10 @@ def gradio_interface() -> None:
 
         def update_crop_preview(x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
+            x_start = min(x_start, x_end-1)
+            x_end   = max(x_start+1, x_end)
+            y_start = min(y_start, y_end-1)
+            y_end   = max(y_start+1, y_end)
             current_image = image_dataset_handler.get_current_image()
             if current_image is None:
                 return None
@@ -102,10 +106,6 @@ def gradio_interface() -> None:
 
         def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float) -> None:
             """Updates the crop values in the dataset handler; and ensure we have a rectangle > 0."""
-            x_start = min(x_start, x_end-1)
-            x_end   = max(x_start+1, x_end)
-            y_start = min(y_start, y_end-1)
-            y_end   = max(y_start+1, y_end)
             image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
 
 
