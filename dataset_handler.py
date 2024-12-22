@@ -142,7 +142,6 @@ class DatasetHandler:
             debug_print(f"Processing file: {file}")
             file_name = Path(file).name
             self.image_tools.load(file, self.handle_very_large_image)
-            self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
             
             # Crop the image
             crop_values = self.crop_list[index]
@@ -153,6 +152,8 @@ class DatasetHandler:
                 crop_values["max_y"]
             )
             self.image_tools.down_sampled = cropped_image
+            
+            self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
             
             save_path = os.path.join(output_dir, file_name)
             new_path  = self.image_tools.save(save_path, self.postfix_string, self.format)
