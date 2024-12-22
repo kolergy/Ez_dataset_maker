@@ -87,27 +87,42 @@ def gradio_interface() -> None:
 
         def browse_image(index: int) -> Tuple[Any, str, str, float, float, float, float, Any]:
             image, size, caption = image_dataset_handler.load_image_at_index(index)
-            crop_values = image_dataset_handler.get_crop_values_at_index(index)
-            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            crop_values          = image_dataset_handler.get_crop_values_at_index(index)
+            updated_image        = update_crop_preview(index, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
             return image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def update_crop_preview(index: int, x_start, x_end, y_start, y_end, code_triggered_flag=False):
             """Update the crop preview overlay"""
-            if not code_triggered_flag:
-                current_image = image_dataset_handler.get_current_image()
-                if current_image is None:
-                    return None
-                updated_image = image_dataset_handler.image_tools.draw_crop_bounds(
-                    current_image, x_start, x_end, y_start, y_end
-                )
-                image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
-            return updated_image
+            #if not code_triggered_flag:
+            if x_start > x_end: # Swap values if start is greater than end
+                orig_xs = x_start
+                x_start = x_end
+                x_end   = orig_xs
+            elif x_start == x_end:
+                if x_end == 100:
+                    x_start = x_end - 1
+                else:
+                    x_end   = x_start + 1
+                
+            if y_start > y_end: # Swap values if start is greater than end
+                orig_ys = y_start
+                y_start = y_end
+                y_end   = orig_ys
+            elif y_start == y_end:
+                if y_end == 100:
+                    y_start = y_end - 1
+                else:
+                    y_end   = y_start + 1
+            
 
-        def update_crop_values(index: int, x_start: float, x_end: float, y_start: float, y_end: float, code_triggered_flag=False) -> None:
-            """Updates the crop values in the dataset handler; and ensure we have a rectangle > 0."""
-            if not code_triggered_flag:
-                image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
-            return None
+            current_image = image_dataset_handler.get_current_image()
+            if current_image is None:
+                return None
+            updated_image = image_dataset_handler.image_tools.draw_crop_bounds(
+                current_image, x_start, x_end, y_start, y_end
+            )
+            image_dataset_handler.set_crop_values_at_index(index, x_start, x_end, y_start, y_end)
+            return updated_image
 
 
         def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
@@ -115,8 +130,8 @@ def gradio_interface() -> None:
             
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
-            crop_values = image_dataset_handler.get_crop_values_at_index(next_idx)
-            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            crop_values          = image_dataset_handler.get_crop_values_at_index(next_idx)
+            updated_image        = update_crop_preview(next_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
             return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
@@ -124,8 +139,8 @@ def gradio_interface() -> None:
             
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
-            crop_values = image_dataset_handler.get_crop_values_at_index(prev_idx)
-            updated_image = update_crop_preview(crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            crop_values          = image_dataset_handler.get_crop_values_at_index(prev_idx)
+            updated_image        = update_crop_preview(prev_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
             return prev_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def toggle_caption_prompt(checkbox: bool) -> gr.update:

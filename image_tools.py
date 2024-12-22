@@ -54,8 +54,11 @@ class ImageTools:
         """Downsamples the image while preserving the aspect ratio."""
         if self.cropped_initial_image:
             working_image = self.cropped_initial_image
-        else:
+        elif self.initial_image:
             working_image = self.initial_image
+        else:
+            print("No image to downsample")
+            return
 
         if smallest_side:
             if working_image.width < working_image.height:
