@@ -36,6 +36,12 @@ class DatasetHandler:
             "min_y": 0.0,
             "max_y": 100.0
         } for _ in self.file_list]
+        
+    def get_crop_values_at_index(self, index: int) -> Dict[str, float]:
+        """Returns the crop values at the given index."""
+        if 0 <= index < len(self.crop_list):
+            return self.crop_list[index]
+        return {"min_x": 0.0, "max_x": 100.0, "min_y": 0.0, "max_y": 100.0}
 
     def set_handle_very_large_image(self, value: bool):
         self.handle_very_large_image = value
@@ -92,7 +98,7 @@ class DatasetHandler:
                     caption = f.read().strip()
                     
             return current_image, image_size, caption
-        return None, "", ""
+        return None, "", "",
 
     def clean_file_list(self, input_file_list: List[str], keep_type: str = 'image') -> List[str]:
         """Strips the file list to keep only files of the desired type."""
