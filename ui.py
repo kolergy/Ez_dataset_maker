@@ -95,8 +95,9 @@ def gradio_interface() -> None:
 
         def update_crop_preview(index: int, x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
-            # pylint: disable-next=R1712
-            if x_start > x_end: # Swap values if start is greater than end
+
+            if x_start > x_end: # Swap values if start is greater than end  # Consider using tuple unpacking for swapping variables (consider-swap-variables)
+                # pylint: disable-next=R1712
                 orig_xs = x_start
                 x_start = x_end
                 x_end   = orig_xs
@@ -106,8 +107,8 @@ def gradio_interface() -> None:
                 else:
                     x_end   = x_start + 1
 
-            # pylint: disable-next=R1712
             if y_start > y_end: # Swap values if start is greater than end
+                # pylint: disable-next=R1712
                 orig_ys = y_start
                 y_start = y_end
                 y_end   = orig_ys
