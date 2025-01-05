@@ -9,11 +9,11 @@ import numpy   as np
 from   typing  import Union
 from   pathlib import Path
 from   PIL     import Image
-from   utils   import debug_print
 from   io      import BytesIO
 from   base64  import b64encode
 
 class ImageTools:
+    """Tools for image manipulation."""
     pil_max_pix: int = Image.MAX_IMAGE_PIXELS
 
     def __init__(self):

@@ -86,7 +86,7 @@ class DatasetHandler:
         if self.image_captioner:
             self.image_captioner.set_enabled_flag(enabled_flag)
         self.generate_caption = enabled_flag
-        return
+
 
     def set_file_name_in_context(self, value: bool):
         """Sets the file name in context flag."""
@@ -98,9 +98,8 @@ class DatasetHandler:
 
     def get_current_image(self) -> Image:
         """Returns the current image for display perf if possible get the lower resolution."""
-        img = self.image_tools.down_sampled
-        if img:
-            return img
+        if self.image_tools.down_sampled:
+            return self.image_tools.down_sampled
         else:
             return self.image_tools.initial_image
 

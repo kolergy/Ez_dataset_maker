@@ -30,7 +30,6 @@ class ImageCaptioner:
         """Stopping criteria that stops generation when a specific list of tokens is generated."""
         def __init__(self, eos_sequence = [32007]):
             """Initializes the EosListStoppingCriteria class."""
-            self.super().__init__()
             self.eos_sequence = eos_sequence
 
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:

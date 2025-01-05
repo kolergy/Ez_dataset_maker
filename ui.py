@@ -128,7 +128,7 @@ def gradio_interface() -> None:
             return updated_image
 
 
-        def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
+        def next_image(current_idx: int) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             """ Save crop of current image before moving """
 
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
@@ -137,7 +137,7 @@ def gradio_interface() -> None:
             updated_image        = update_crop_preview(next_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
             return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
-        def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
+        def prev_image(current_idx: int) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             """ Save crop of current image before moving """
 
             prev_idx = max(current_idx - 1, 0)
@@ -177,13 +177,13 @@ def gradio_interface() -> None:
 
         next_button.click(
             fn=next_image,
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            inputs=[current_index],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
 
         prev_button.click(
             fn=prev_image,
-            inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
+            inputs=[current_index],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
         caption_checkbox.change(fn=toggle_caption_prompt, inputs=caption_checkbox, outputs=[caption_prompt, caption_model_selector, caption_checkbox])
