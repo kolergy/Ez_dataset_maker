@@ -18,7 +18,12 @@ class ImageTools:
 
     def __init__(self):
         """Initializes the ImageTools class."""
-        self.clear_image_data()
+        self.path                    = None
+        self.handle_very_large_image = False
+        self.initial_image           = None
+        self.down_sampled            = None
+        self.cropped_initial_image   = None
+
 
 
     def clear_image_data(self):
