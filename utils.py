@@ -2,7 +2,8 @@
 
 DEBUG = True
 
-class DebugPrint: # pylint: disable-next=R0903,
+# pylint: disable-next=R0903
+class DebugPrint:
     """Prints the arguments if debug_state is True."""
     def __init__(self, debug_state: bool = DEBUG):
         """Initializes the DebugPrint class."""
