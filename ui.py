@@ -9,7 +9,8 @@ from   typing          import Tuple, Any, List, Generator
 from   dataset_handler import DatasetHandler
 from   utils           import debug_print
 
-def gradio_interface() -> None:  # pylint: disable-next=R0914, R0915
+# pylint: disable-next=R0914, R0915
+def gradio_interface() -> None:
     """Creates the Gradio interface for the image batch downsampler and captioner."""
 
     image_dataset_handler = DatasetHandler()
@@ -94,8 +95,8 @@ def gradio_interface() -> None:  # pylint: disable-next=R0914, R0915
 
         def update_crop_preview(index: int, x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
-            #if not code_triggered_flag:
-            if x_start > x_end: # Swap values if start is greater than end  # pylint: disable=R1712
+            # pylint: disable-next=R1712
+            if x_start > x_end: # Swap values if start is greater than end
                 orig_xs = x_start
                 x_start = x_end
                 x_end   = orig_xs
@@ -105,7 +106,8 @@ def gradio_interface() -> None:  # pylint: disable-next=R0914, R0915
                 else:
                     x_end   = x_start + 1
 
-            if y_start > y_end: # Swap values if start is greater than end # pylint: disable=R1712
+            # pylint: disable-next=R1712
+            if y_start > y_end: # Swap values if start is greater than end
                 orig_ys = y_start
                 y_start = y_end
                 y_end   = orig_ys
