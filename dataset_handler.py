@@ -16,7 +16,8 @@ from   utils       import debug_print
 class DatasetHandler:
     """Handles the dataset of images"""
 
-    def __init__(self):  # pylint: disable-next=R0903
+    # pylint: disable-next=R0903
+    def __init__(self):
         """Initializes the DatasetHandler class."""
         self.file_list: List[str]              = []
         self.crop_list: List[Dict[str, float]] = []

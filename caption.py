@@ -71,7 +71,7 @@ class ImageCaptioner:
         file_context = f"File name: {file_name}\n" if file_name else ""
         dir_context  = f"Directory name: {dir_name}\n" if dir_name else ""
         self.prompt  = f"{file_context}{dir_context}{self.user_prompt}"
-        if self.target_model == "llava" or self.target_model == "molmo":
+        if self.target_model in ('llava', 'molmo'):
             self.prompt =  f"<s>[INST]{self.user_prompt} {file_context} {dir_context}\n[IMG][/INST]"
         elif self.target_model == "xgen":
             self.prompt =  (
@@ -152,6 +152,7 @@ class ImageCaptioner:
         self.user_prompt = user_prompt
         self.generate_prompt_txt()
 
+    # pylint: disable-next=R0912,R0915,
     def generate_image_caption(self, file_name_in_caption:bool=False, dir_name_in_caption:bool=False) -> str:
         """Function to evaluate the model"""
         if not self.model_loaded.is_set():
