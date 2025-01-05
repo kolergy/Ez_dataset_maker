@@ -36,7 +36,7 @@ class DatasetHandler:
             "min_y": 0.0,
             "max_y": 100.0
         } for _ in self.file_list]
-        
+
     def get_crop_values_at_index(self, index: int) -> Dict[str, float]:
         """Returns the crop values at the given index."""
         if 0 <= index < len(self.crop_list):
@@ -76,7 +76,7 @@ class DatasetHandler:
             self.image_captioner.set_enabled_flag(enabled_flag)
         self.generate_caption = enabled_flag
         return
-    
+
     def set_file_name_in_context(self, value: bool):
         self.file_name_in_context = value
 
@@ -90,24 +90,24 @@ class DatasetHandler:
             return img
         else:
             return self.image_tools.initial_image
-            
+
     def load_image_at_index(self, index: int) -> Tuple[Image.Image, str, str]:
         """Loads and returns image, size and caption at given index"""
         if 0 <= index < len(self.file_list):
             file_path = self.file_list[index]
             self.image_tools.load(file_path, self.handle_very_large_image)
             self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
-            
+
             current_image = self.get_current_image()
             image_size = f"{current_image.width}x{current_image.height}"
-            
+
             # Try to read existing caption if any
             caption = ""
             caption_path = str(Path(file_path).with_suffix('.txt'))
             if os.path.exists(caption_path):
                 with open(caption_path, 'r') as f:
                     caption = f.read().strip()
-            
+
             return current_image, image_size, caption
         return None, "", "",
 
@@ -118,7 +118,7 @@ class DatasetHandler:
             cleaned_list = [file for file in input_file_list if Path(file).suffix.lower() in image_extensions]
             debug_print(f"DEBUG: clean_file_list - Input files: {len(input_file_list)}, Cleaned files: {len(cleaned_list)}")
             return cleaned_list
-        else: 
+        else:
             debug_print(f"DEBUG: clean_file_list - Returning empty list for keep_type: {keep_type}")
             return []
 
@@ -136,12 +136,12 @@ class DatasetHandler:
         output_dir = os.path.join(base_dir, self.output_dir)
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        
+
         for index, file in enumerate(self.file_list):
             debug_print(f"Processing file: {file}")
             file_name = Path(file).name
             self.image_tools.load(file, self.handle_very_large_image)
-            
+
             # Crop the image
             crop_values = self.crop_list[index]
             print(f"Finally cropping with values: {crop_values}")
@@ -152,20 +152,20 @@ class DatasetHandler:
                 crop_values["max_y"]
             )
             self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
-            
+
             save_path = os.path.join(output_dir, file_name)
             new_path  = self.image_tools.save(save_path, self.postfix_string, self.format)
             remaining_images -= 1
-            
+
             debug_print(f"Image saved to: {new_path}")
-            
+
             caption = ""
             if self.generate_caption and self.image_captioner:
                 debug_print("Generating caption...")
                 caption = self.image_captioner.generate_image_caption(self.file_name_in_context, self.dir_name_in_context)
                 self.image_captioner.save_caption(new_path)
                 debug_print(f"Caption saved to: {new_path}")
-            
+
             debug_print(f"Remaining images: {remaining_images}")
-            
+
             yield total_images, total_images - remaining_images, remaining_images, caption

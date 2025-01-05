@@ -12,7 +12,7 @@ from   caption         import ImageCaptioner
 from   utils           import debug_print
 
 def gradio_interface() -> None:
-    
+
     image_dataset_handler = DatasetHandler()
     image_captioner       = image_dataset_handler.image_captioner
     valid_models          = image_captioner.valid_models
@@ -45,15 +45,15 @@ def gradio_interface() -> None:
                     smallest_side           = gr.Checkbox(     label      = "Apply to smallest side",   value       = True                           )
                     postfix_string          = gr.Textbox(      label      = "Postfix String",           value       = "re_sampled"                   )
                     format_selector         = gr.Dropdown(     label      = "Output Format",            choices     = ["PNG", "jpeg"], value = "PNG" )
-                    caption_model_selector  = gr.Dropdown(     label      = "Caption Model Type",       value       = "xgen", choices=valid_models   )                        
+                    caption_model_selector  = gr.Dropdown(     label      = "Caption Model Type",       value       = "xgen", choices=valid_models   )
                     caption_checkbox        = gr.Checkbox(     label      = "Generate caption",         value       = False                          )
                     file_name_in_context    = gr.Checkbox(     label      = "add file name to context", value       = False                          )
                     dir_name_in_context     = gr.Checkbox(     label      = "add dir name to context",  value       = False                          )
-                    
+
                     caption_prompt          = gr.Textbox(      label      = "Caption prompt",           value       = "Provide a detailed image caption with tags separated by commas.")#, visible = False )
 
 
-                
+
                 current_index      = gr.Number(value=0, label="Current Image Index", interactive=True)
         # Move image display and navigation outside columns
         with gr.Row():
@@ -67,7 +67,7 @@ def gradio_interface() -> None:
                     y_start_slider    = gr.Slider(minimum=0, maximum=100, value=0,   label="Y Start %")
                     y_end_slider      = gr.Slider(minimum=0, maximum=100, value=100, label="Y End %")
             next_button = gr.Button("→", elem_classes="nav-button")
-            
+
         with gr.Row():
             image_size_display     = gr.Textbox(label="Image Size",                             value="", interactive=False)
             caption_output         = gr.Textbox(label="Generated Caption",                      value="", visible=False, lines=5, interactive=True)
@@ -103,7 +103,7 @@ def gradio_interface() -> None:
                     x_start = x_end - 1
                 else:
                     x_end   = x_start + 1
-                
+
             if y_start > y_end: # Swap values if start is greater than end
                 orig_ys = y_start
                 y_start = y_end
@@ -113,7 +113,7 @@ def gradio_interface() -> None:
                     y_start = y_end - 1
                 else:
                     y_end   = y_start + 1
-            
+
 
             current_image = image_dataset_handler.get_current_image()
             if current_image is None:
@@ -127,7 +127,7 @@ def gradio_interface() -> None:
 
         def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             # Save crop of current image before moving
-            
+
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
             crop_values          = image_dataset_handler.get_crop_values_at_index(next_idx)
@@ -136,7 +136,7 @@ def gradio_interface() -> None:
 
         def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
             # Save crop of current image before moving
-            
+
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
             crop_values          = image_dataset_handler.get_crop_values_at_index(prev_idx)
@@ -152,37 +152,37 @@ def gradio_interface() -> None:
                 caption_model_selector: gr.update(interactive=not checkbox),
                 caption_checkbox: gr.update(interactive=not checkbox)
             }
-            
-            
 
-        def set_caption_model(model_type: str) -> None:                                                                                                                                                                                                          
-            image_captioner.set_caption_model(model_type)  
+
+
+        def set_caption_model(model_type: str) -> None:
+            image_captioner.set_caption_model(model_type)
 
         file_explorer.change(
             fn=update_file_count,
             inputs=file_explorer,
             outputs=[total_files, initial_images, remaining_images, current_image_display, image_size_display, caption_text_display]
         )
-        
+
         current_index.change(
             fn=browse_image,
             inputs=[current_index],
             outputs=[current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
-        
+
         next_button.click(
             fn=next_image,
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
-        
+
         prev_button.click(
             fn=prev_image,
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider],
             outputs=[current_index, current_image_display, image_size_display, caption_text_display, x_start_slider, x_end_slider, y_start_slider, y_end_slider, current_image_display]
         )
         caption_checkbox.change(fn=toggle_caption_prompt, inputs=caption_checkbox, outputs=[caption_prompt, caption_model_selector, caption_checkbox])
-        
+
         # Update settings when UI elements change
         handle_very_large_image.change(fn=image_dataset_handler.set_handle_very_large_image     , inputs=handle_very_large_image, outputs=[])
         target_size.change(            fn=image_dataset_handler.set_target_size                 , inputs=target_size,             outputs=[])
@@ -216,7 +216,7 @@ def gradio_interface() -> None:
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
-        
+
         def initiate_image_processing() -> Generator[Tuple[int, int, int, str, str, Any, str, str], None, None]:
             """Initiates the image processing workflow and yields progress updates."""
             print("Initiating image processing - len file list:", len(image_dataset_handler.file_list))
@@ -224,15 +224,15 @@ def gradio_interface() -> None:
             if len(image_dataset_handler.file_list) == 0:
                 debug_print("No files selected for processing")
                 return
-            
+
             debug_print(f"Starting image processing with {len(image_dataset_handler.file_list)} files")
             debug_print(f"Parameters: {image_dataset_handler.__dict__}")
-        
+
             if not image_dataset_handler.generate_caption:
                 debug_print("Skipping model loading (caption generation disabled)")
 
             yield 0, 0, len(image_dataset_handler.file_list), "", "Initializing processing...", None, "", ""
-        
+
             for total, processed, remaining, caption in image_dataset_handler.process_image_files():
                 current_image   = image_dataset_handler.get_current_image()
                 image_size      = f"{current_image.width}x{current_image.height}" if current_image else ""
@@ -241,9 +241,9 @@ def gradio_interface() -> None:
                 if image_dataset_handler.generate_caption:
                     debug_print(f"Generated caption: {caption}")
                 yield total, processed, remaining, caption, console_message, current_image, image_size, caption
-        
+
             debug_print("Finished processing all files")
-            
+
         #def save_modified_caption(caption: str, file_list: List[str]) -> None:
         #    if file_list and caption:
         #        last_processed_image = file_list[-1]

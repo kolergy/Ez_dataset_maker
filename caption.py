@@ -32,8 +32,8 @@ class ImageCaptioner:
 
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
             last_ids = input_ids[:,-len(self.eos_sequence):].tolist()
-            return self.eos_sequence in last_ids    
-                
+            return self.eos_sequence in last_ids
+
     def __init__(self, image_tools: ImageTools):
         self.image_tools               = image_tools
         self.model                     = None
@@ -85,16 +85,16 @@ class ImageCaptioner:
         if self.target_model == "llava":
             self.model_id_path   = self.llava_model_id_path
             self.model           = AutoModelForVision2Seq.from_pretrained(
-                                        self.model_id_path, 
-                                        low_cpu_mem_usage   = True, 
-                                        quantization_config = self.bnb_config, 
+                                        self.model_id_path,
+                                        low_cpu_mem_usage   = True,
+                                        quantization_config = self.bnb_config,
                                         torch_dtype         = torch.float16,
                                         device_map          = 'auto',
                                         )
             #self.tokenizer       = AutoProcessor.from_pretrained(self.model_id_path)
-            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map='auto') 
+            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map='auto')
         elif self.target_model == "xgen":
-            self.model_id_path   = self.xgen_model_id_path  
+            self.model_id_path   = self.xgen_model_id_path
             # load models
             model                = AutoModelForVision2Seq.from_pretrained(self.model_id_path, trust_remote_code=True)
             tokenizer            = AutoTokenizer.from_pretrained(self.model_id_path, trust_remote_code=True, use_fast=False, legacy=False)
@@ -105,8 +105,8 @@ class ImageCaptioner:
         elif self.target_model == "blip":
             self.model_id_path   = self.blip_model_id_path
             self.model           = BlipForConditionalGeneration.from_pretrained(
-                                        self.model_id_path, 
-                                        low_cpu_mem_usage   = True, 
+                                        self.model_id_path,
+                                        low_cpu_mem_usage   = True,
                                         quantization_config = self.bnb_config, 
                                         torch_dtype         = torch.float16,
                                         #device_map          = 'auto', Dosen not work for BLIP!

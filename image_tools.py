@@ -19,7 +19,7 @@ class ImageTools:
     def __init__(self):
         self.clear_image_data()
 
-        
+
     def clear_image_data(self):
         """Clears the image data."""
         self.path                    = None
@@ -32,10 +32,10 @@ class ImageTools:
     def load(self, path: Union[str, os.PathLike], handle_very_large_image: bool = False):
         """Loads an image and sets the image and metadata."""
         self.clear_image_data()
-        
+
         self.path                    = path
         self.handle_very_large_image = handle_very_large_image
-        
+
         if self.handle_very_large_image:
             Image.MAX_IMAGE_PIXELS = None
             im_array               = np.array(Image.open(self.path), dtype=np.uint8)
@@ -81,7 +81,7 @@ class ImageTools:
     def get_file_name(self) -> str:
         """Returns the file name."""
         return Path(self.path).name
-    
+
     def get_dir_name(self) -> str:
         """Returns the directory name."""
         return Path(self.path).parent.name
@@ -114,7 +114,7 @@ class ImageTools:
         if x_start_pct==0 and x_end_pct==100 and y_start_pct==0 and y_end_pct==100:
             self.cropped_initial_image  = self.initial_image
             return
-        
+
         width, height = self.initial_image.size
         print(f"width: {width}, height: {height}")
         x_start  = int((x_start_pct / 100.0) * width )
@@ -131,30 +131,30 @@ class ImageTools:
         """Draw crop boundaries on image as percentage of dimensions"""
         from PIL import ImageDraw, Image
         import numpy as np
-        
+
         if img is None:
             return None
-        
+
         # Convert numpy array to PIL Image if needed
         if isinstance(img, np.ndarray):
             img = Image.fromarray(img)
-            
+
         # Make a fresh copy to avoid accumulating drawings
         img_copy = img.copy()
-        
+
         # Convert to RGB for drawing
         #img_copy = img_copy.convert('RGB')
         draw = ImageDraw.Draw(img_copy)
-        
+
         # Calculate pixel coordinates from percentages
         width, height = img.size
         x_start = int((x_start_pct / 100.0) * width )
         x_end   = int((x_end_pct   / 100.0) * width )
         y_start = int((y_start_pct / 100.0) * height)
         y_end   = int((y_end_pct   / 100.0) * height)
-        
+
         # Draw rectangle outline in white
         draw.rectangle([(x_start, y_start), (x_end, y_end)], outline='white', width=2)
-        
+
         return img_copy
 
