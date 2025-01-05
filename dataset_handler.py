@@ -13,6 +13,7 @@ from   image_tools import ImageTools
 from   caption     import ImageCaptioner
 from   utils       import debug_print
 
+# pylint: disable-next=R0902
 class DatasetHandler:
     """Handles the dataset of images"""
 
