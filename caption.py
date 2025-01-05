@@ -30,6 +30,7 @@ class ImageCaptioner:
         """Stopping criteria that stops generation when a specific list of tokens is generated."""
         def __init__(self, eos_sequence = [32007]):
             """Initializes the EosListStoppingCriteria class."""
+            self.super().__init__()
             self.eos_sequence = eos_sequence
 
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
@@ -37,7 +38,7 @@ class ImageCaptioner:
             last_ids = input_ids[:,-len(self.eos_sequence):].tolist()
             return self.eos_sequence in last_ids
 
-    def __init__(self, image_tools: ImageTools):
+    def __init__(self, image_tools: ImageTools) -> None:
         """Initializes the ImageCaptioner class."""
         self.image_tools               = image_tools
         self.model                     = None
@@ -56,7 +57,6 @@ class ImageCaptioner:
         self.enabled_flag = enabled_flag
         if enabled_flag and not self.model_loaded.is_set():
             self.load_multi_modal_model_background()
-        return
 
 
     def generate_prompt_txt(self, file_name:str=None, dir_name:str=None) -> None:
@@ -181,7 +181,7 @@ class ImageCaptioner:
 
 
         debug_print(f"Input generated inputs length: {len(inputs)}")
-
+        generated_tokens = None
         if self.target_model == "llava":
             generated_tokens = self.model.generate(
                                             **inputs,
