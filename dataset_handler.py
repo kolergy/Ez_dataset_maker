@@ -17,19 +17,23 @@ class DatasetHandler:
 
     def __init__(self):
         """Initializes the DatasetHandler class."""
-        self.file_list: List[str]          = []
-        self.handle_very_large_image: bool = False
-        self.target_size: int              = 1024
-        self.smallest_side: bool           = True
-        self.postfix_string: str           = "down_sampled"
-        self.output_dir: str               = "Output"
-        self.format: str                   = "PNG"
-        self.generate_caption: bool        = False
-        self.image_tools                   = ImageTools()
-        self.image_captioner               = ImageCaptioner(self.image_tools)
-        self.file_name_in_context: bool    = False
-        self.dir_name_in_context: bool     = False
+        self.file_list: List[str]              = []
         self.crop_list: List[Dict[str, float]] = []
+        self.handle_very_large_image: bool     = False
+        self.target_size: int                  = 1024
+        self.smallest_side: bool               = True
+        self.postfix_string: str               = "down_sampled"
+        self.output_dir: str                   = "Output"
+        self.format: str                       = "PNG"
+        self.generate_caption: bool            = False
+        self.image_tools                       = ImageTools()
+        self.image_captioner                   = ImageCaptioner(self.image_tools)
+        self.file_name_in_context: bool        = False
+        self.dir_name_in_context: bool         = False
+        self.image_tools.initial_image         = None
+        self.image_tools.down_sampled          = None
+        self.image_tools.cropped_initial_image = None
+
 
     def set_file_list(self, file_list: List[str]):
         """Sets the file list."""
@@ -98,7 +102,7 @@ class DatasetHandler:
 
     def get_current_image(self) -> Image:
         """Returns the current image for display perf if possible get the lower resolution."""
-        if self.image_tools.down_sampled:
+        if self.image_tools.down_sampled is not None:
             return self.image_tools.down_sampled
         else:
             return self.image_tools.initial_image
@@ -111,7 +115,7 @@ class DatasetHandler:
             self.image_tools.down_sample_fix_AR(self.target_size, self.smallest_side)
 
             current_image = self.get_current_image()
-            image_size = f"{current_image.width}x{current_image.height}"
+            image_size    = f"{current_image.width}x{current_image.height}"
 
             # Try to read existing caption if any
             caption = ""

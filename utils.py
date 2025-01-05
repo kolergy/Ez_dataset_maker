@@ -1,3 +1,5 @@
+""" The stufs that can not be put eleswere. """
+
 DEBUG = True
 
 class DebugPrint:

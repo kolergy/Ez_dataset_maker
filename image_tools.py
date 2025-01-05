@@ -8,7 +8,7 @@ import numpy   as np
 
 from   typing  import Union
 from   pathlib import Path
-from   PIL     import Image
+from   PIL     import Image, ImageDraw
 from   io      import BytesIO
 from   base64  import b64encode
 
@@ -130,9 +130,6 @@ class ImageTools:
 
     def draw_crop_bounds(self, img, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
         """Draw crop boundaries on image as percentage of dimensions"""
-        from PIL import ImageDraw, Image
-        import numpy as np
-
         if img is None:
             return None
 
