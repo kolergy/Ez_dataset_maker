@@ -5,7 +5,8 @@ Here are all the means to manipulmate the dataset
 
 
 import os
-from   typing      import List, Any, Generator, Tuple, Dict
+
+from   typing      import List, Generator, Tuple, Dict
 from   pathlib     import Path
 from   PIL         import Image
 from   image_tools import ImageTools

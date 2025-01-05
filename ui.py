@@ -3,12 +3,10 @@ here are all the things realted to the UI of the application and ONLY the us no 
 """
 
 
-import os
 import gradio          as     gr
 
 from   typing          import Tuple, Any, List, Generator
 from   dataset_handler import DatasetHandler
-from   caption         import ImageCaptioner
 from   utils           import debug_print
 
 def gradio_interface() -> None:
