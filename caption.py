@@ -6,9 +6,7 @@ import torch
 import os
 import threading
 
-from   base64       import b64encode
-from   typing       import List, Union
-from   PIL          import Image
+from   typing       import Union
 from   pathlib      import Path
 from   transformers import BitsAndBytesConfig, StoppingCriteria, GenerationConfig, AutoModelForCausalLM
 from   transformers import AutoProcessor, AutoModelForVision2Seq, BlipForConditionalGeneration, AutoTokenizer, AutoImageProcessor
