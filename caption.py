@@ -52,6 +52,9 @@ class ImageCaptioner:
         self.prompt                    = ""
         self.enabled_flag              = False
         self.caption                   = ""
+        self.image_to_caption          = None
+        self.target_model              = None
+        self.model_id_path             = None
 
     def set_enabled_flag(self, enabled_flag: bool) -> None:
         """Set the enabled flag for the captioner"""
