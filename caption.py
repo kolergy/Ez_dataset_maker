@@ -151,22 +151,25 @@ class ImageCaptioner:
                 print(".", end="")
                 time.sleep(10)
 
+        final_prompt = self.prompt
         if file_name_in_caption:
-            file_name = self.image_tools.get_file_name()
-            dir_name  = self.image_tools.get_dir_name()
+            final_prompt = final_prompt + ", file_name: " + self.image_tools.get_file_name()
+        if dir_name_in_caption:
+            final_prompt  = final_prompt + ", directory_name: " + self.image_tools.get_dir_name()
 
         self.image_to_caption = self.image_tools.get_down_sampled_image(512, smallest_side=False, convert2RGB = False)
         debug_print(f"Image type: {type(self.image_to_caption)}")
-
         debug_print(f"Processing image. Size: {self.image_to_caption.width}x{self.image_to_caption.height}")
         debug_print(f"generating {self.target_model} model inputs")
+        debug_print(f"Prompt: {final_prompt}")
+
         if self.target_model == "llava":
             debug_print("llava and molmo")
-            inputs                = self.image_processor(text=self.prompt,images=[self.image_to_caption], return_tensors="pt").to("cuda")
+            inputs                = self.image_processor(text=final_prompt,images=[self.image_to_caption], return_tensors="pt").to("cuda")
 
         elif self.target_model == "xgen":
             inputs          = self.image_processor([self.image_to_caption], return_tensors="pt", image_aspect_ratio='anyres')
-            language_inputs = self.tokenizer([self.prompt], return_tensors="pt")
+            language_inputs = self.tokenizer([final_prompt], return_tensors="pt")
             inputs.update(language_inputs)
             inputs          = {name: tensor.cuda() for name, tensor in inputs.items()}
 
@@ -174,7 +177,7 @@ class ImageCaptioner:
             inputs                = self.image_processor(images=self.image_to_caption, return_tensors="pt").to("cuda")
 
         elif self.target_model == "molmo":
-            inputs                = self.image_processor.process(images=[self.image_to_caption], text=self.prompt )
+            inputs                = self.image_processor.process(images=[self.image_to_caption], text=final_prompt )
             inputs                = {k: v.to(self.model.device).unsqueeze(0) for k, v in inputs.items()}
 
 
