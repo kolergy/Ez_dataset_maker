@@ -50,10 +50,10 @@ class ImageTools:
             Image.MAX_IMAGE_PIXELS = self.pil_max_pix
             self.initial_image     = Image.open(self.path)
 
-    def save(self, path: Union[str, os.PathLike], postfix_string: str, format: str) -> str:
+    def save(self, path: Union[str, os.PathLike], postfix_string: str, img_format: str) -> str:
         """Saves the image with the specified format and postfix."""
         new_path = Path(path).with_name(f"{Path(path).stem}_{postfix_string}{Path(path).suffix}")
-        self.down_sampled.save(new_path, format=format, quality=95)
+        self.down_sampled.save(new_path, format=img_format, quality=95)
         return str(new_path)
 
     def down_sample_fix_ar(self, target_size: int, smallest_side: bool) -> None:
