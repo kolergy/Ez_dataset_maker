@@ -15,7 +15,7 @@ from   utils        import debug_print
 
 default_eos_sequence     = [32007]
 
-
+# pylint: disable-next=R0902,
 class ImageCaptioner:
     """Class to generate image captions using different models"""
     llava_model_id_path: str = "mistral-community/pixtral-12b"
@@ -27,11 +27,14 @@ class ImageCaptioner:
     target_model             = "xgen"
     valid_models             = ("blip",  "xgen", "llava", "molmo")
 
-
+    # pylint: disable-next=R0903,
     class EosListStoppingCriteria(StoppingCriteria):
         """Stopping criteria that stops generation when a specific list of tokens is generated."""
-        def __init__(self, eos_sequence = default_eos_sequence):
+        # pylint: disable-next=W0231,
+        def __init__(self, eos_sequence = None):
             """Initializes the EosListStoppingCriteria class."""
+            if eos_sequence is None:
+                eos_sequence = default_eos_sequence
             self.eos_sequence = eos_sequence
 
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
@@ -88,6 +91,7 @@ class ImageCaptioner:
             thread               = threading.Thread(target=self._load_multi_modal_model)
             thread.start()
 
+    # pylint: disable-next=R0912,R0915,
     def _load_multi_modal_model(self) -> None:
         """Load the provided model"""
         debug_print(f"Loading {self.target_model} type model in the background")

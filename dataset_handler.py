@@ -16,7 +16,7 @@ from   utils       import debug_print
 class DatasetHandler:
     """Handles the dataset of images"""
 
-    def __init__(self):
+    def __init__(self):  # pylint: disable-next=R0903
         """Initializes the DatasetHandler class."""
         self.file_list: List[str]              = []
         self.crop_list: List[Dict[str, float]] = []
@@ -52,6 +52,7 @@ class DatasetHandler:
             return self.crop_list[index]
         return {"min_x": 0.0, "max_x": 100.0, "min_y": 0.0, "max_y": 100.0}
 
+    # pylint: disable-next=R0913, R0917
     def set_crop_values_at_index(self, index: int, min_x: float, max_x: float, min_y: float, max_y: float) -> None:
         """Sets the crop values at the given index."""
         if 0 <= index < len(self.crop_list):
@@ -121,7 +122,7 @@ class DatasetHandler:
             caption = ""
             caption_path = str(Path(file_path).with_suffix('.txt'))
             if os.path.exists(caption_path):
-                with open(caption_path, 'r') as f:
+                with open(caption_path, mode='r', encoding='utf-8') as f:
                     caption = f.read().strip()
 
             return current_image, image_size, caption
