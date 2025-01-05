@@ -56,7 +56,7 @@ class ImageTools:
         self.down_sampled.save(new_path, format=format, quality=95)
         return str(new_path)
 
-    def down_sample_fix_AR(self, target_size: int, smallest_side: bool) -> None:
+    def down_sample_fix_ar(self, target_size: int, smallest_side: bool) -> None:
         """Downsamples the image while preserving the aspect ratio."""
         if self.cropped_initial_image:
             working_image = self.cropped_initial_image
@@ -92,21 +92,20 @@ class ImageTools:
         """Returns the directory name."""
         return Path(self.path).parent.name
 
-    def get_down_sampled_image(self, size=333, smallest_side=True, convert2RGB = False) -> Image:
+    def get_down_sampled_image(self, size=333, smallest_side=True, convert_2_rgb = False) -> Image:
         """Returns the downsampled image."""
         if not self.down_sampled:
-            self.down_sample_fix_AR(size, smallest_side)
+            self.down_sample_fix_ar(size, smallest_side)
             self.convert_downsampled_image_to_rgb()
-        if convert2RGB:
+        if convert_2_rgb:
             return self.down_sampled.convert("RGB")
-        else:
-            return self.down_sampled
+        return self.down_sampled
 
 
     def get_base64_img_string(self, size=333, smallest_side=True) -> str:
         """Returns the base64 encoded image string."""
         if not self.down_sampled:
-            self.down_sample_fix_AR(size, smallest_side)
+            self.down_sample_fix_ar(size, smallest_side)
             self.convert_downsampled_image_to_rgb()
 
         img_bytes  = BytesIO()
@@ -132,7 +131,7 @@ class ImageTools:
         self.cropped_initial_image  = self.initial_image.crop(crop_box)
         print(f"cropped_image.size: {self.cropped_initial_image.size}")
 
-
+    # pylint: disable-next=R0913, R0917
     def draw_crop_bounds(self, img, x_start_pct: float, x_end_pct: float, y_start_pct: float, y_end_pct: float) -> Image:
         """Draw crop boundaries on image as percentage of dimensions"""
         if img is None:
