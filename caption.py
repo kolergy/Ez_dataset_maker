@@ -13,6 +13,9 @@ from   transformers import AutoProcessor, AutoModelForVision2Seq, BlipForConditi
 from   image_tools  import ImageTools
 from   utils        import debug_print
 
+default_eos_sequence     = [32007]
+
+
 class ImageCaptioner:
     """Class to generate image captions using different models"""
     llava_model_id_path: str = "mistral-community/pixtral-12b"
@@ -24,9 +27,10 @@ class ImageCaptioner:
     target_model             = "xgen"
     valid_models             = ("blip",  "xgen", "llava", "molmo")
 
+
     class EosListStoppingCriteria(StoppingCriteria):
         """Stopping criteria that stops generation when a specific list of tokens is generated."""
-        def __init__(self, eos_sequence = [32007]):
+        def __init__(self, eos_sequence = default_eos_sequence):
             """Initializes the EosListStoppingCriteria class."""
             self.eos_sequence = eos_sequence
 
@@ -60,7 +64,7 @@ class ImageCaptioner:
         """Define the prompt template for captionning"""
         file_context = f"File name: {file_name}\n" if file_name else ""
         dir_context  = f"Directory name: {dir_name}\n" if dir_name else ""
-        self.prompt = f"{file_context}{dir_context}{self.user_prompt}"
+        self.prompt  = f"{file_context}{dir_context}{self.user_prompt}"
         if self.target_model == "llava" or self.target_model == "molmo":
             self.prompt =  f"<s>[INST]{self.user_prompt} {file_context} {dir_context}\n[IMG][/INST]"
         elif self.target_model == "xgen":
@@ -151,7 +155,7 @@ class ImageCaptioner:
 
         final_prompt = self.prompt
         if file_name_in_caption:
-            final_prompt = final_prompt + ", file_name: " + self.image_tools.get_file_name()
+            final_prompt = final_prompt + ", file_name: "       + self.image_tools.get_file_name()
         if dir_name_in_caption:
             final_prompt  = final_prompt + ", directory_name: " + self.image_tools.get_dir_name()
 

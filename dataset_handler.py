@@ -105,8 +105,7 @@ class DatasetHandler:
         """Returns the current image for display perf if possible get the lower resolution."""
         if self.image_tools.down_sampled is not None:
             return self.image_tools.down_sampled
-        else:
-            return self.image_tools.initial_image
+        return self.image_tools.initial_image
 
     def load_image_at_index(self, index: int) -> Tuple[Image.Image, str, str]:
         """Loads and returns image, size and caption at given index"""
@@ -135,9 +134,9 @@ class DatasetHandler:
             cleaned_list = [file for file in input_file_list if Path(file).suffix.lower() in image_extensions]
             debug_print(f"DEBUG: clean_file_list - Input files: {len(input_file_list)}, Cleaned files: {len(cleaned_list)}")
             return cleaned_list
-        else:
-            debug_print(f"DEBUG: clean_file_list - Returning empty list for keep_type: {keep_type}")
-            return []
+
+        debug_print(f"DEBUG: clean_file_list - Returning empty list for keep_type: {keep_type}")
+        return []
 
     def process_image_files(self) -> Generator[Tuple[int, int, int, str], None, None]:
         """Processes the list of image files by loading, resizing, saving each image, and optionally generating a caption."""
