@@ -13,7 +13,10 @@ from   caption     import ImageCaptioner
 from   utils       import debug_print
 
 class DatasetHandler:
+    """Handles the dataset of images"""
+
     def __init__(self):
+        """Initializes the DatasetHandler class."""
         self.file_list: List[str]          = []
         self.handle_very_large_image: bool = False
         self.target_size: int              = 1024
@@ -29,6 +32,7 @@ class DatasetHandler:
         self.crop_list: List[Dict[str, float]] = []
 
     def set_file_list(self, file_list: List[str]):
+        """Sets the file list."""
         self.file_list = self.clean_file_list(file_list)
         self.crop_list = [{
             "min_x": 0.0,
@@ -54,33 +58,42 @@ class DatasetHandler:
             }
 
     def set_handle_very_large_image(self, value: bool):
+        """Sets the handle very large image flag."""
         self.handle_very_large_image = value
 
     def set_target_size(self, value: int):
+        """Sets the target image size."""
         self.target_size = value
 
     def set_smallest_side(self, value: bool):
+        """Sets the smallest side flag for the size."""
         self.smallest_side = value
 
     def set_postfix_string(self, value: str):
+        """Sets the postfix string for the saved image name."""
         self.postfix_string = value
 
     def set_format(self, value: str):
+        """Sets the format for the saved image."""
         self.format = value
 
     def set_caption_prompt(self, user_prompt: str):
+        """Sets the user prompt for the caption."""
         self.image_captioner.set_user_prompt(user_prompt)
 
     def set_image_captioner_enabled_flag(self, enabled_flag: bool) -> None:
+        """Sets the enabled flag for the image captioner."""
         if self.image_captioner:
             self.image_captioner.set_enabled_flag(enabled_flag)
         self.generate_caption = enabled_flag
         return
 
     def set_file_name_in_context(self, value: bool):
+        """Sets the file name in context flag."""
         self.file_name_in_context = value
 
     def set_dir_name_in_context(self, value: bool):
+        """Sets the directory name in context flag."""
         self.dir_name_in_context = value
 
     def get_current_image(self) -> Image:

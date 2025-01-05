@@ -17,6 +17,7 @@ from   image_tools  import ImageTools
 from   utils        import debug_print
 
 class ImageCaptioner:
+    """Class to generate image captions using different models"""
     llava_model_id_path: str = "mistral-community/pixtral-12b"
     molmo_model_id_path: str = "allenai/Molmo-7B-D-0924"
     xgen_model_id_path: str  = "Salesforce/xgen-mm-phi3-mini-instruct-r-v1"
@@ -27,14 +28,18 @@ class ImageCaptioner:
     valid_models             = ("blip",  "xgen", "llava", "molmo")
 
     class EosListStoppingCriteria(StoppingCriteria):
+        """Stopping criteria that stops generation when a specific list of tokens is generated."""
         def __init__(self, eos_sequence = [32007]):
+            """Initializes the EosListStoppingCriteria class."""
             self.eos_sequence = eos_sequence
 
         def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
+            """Returns True if the eos_sequence is in the last tokens of the input_ids."""
             last_ids = input_ids[:,-len(self.eos_sequence):].tolist()
             return self.eos_sequence in last_ids
 
     def __init__(self, image_tools: ImageTools):
+        """Initializes the ImageCaptioner class."""
         self.image_tools               = image_tools
         self.model                     = None
         self.tokenizer                 = None
@@ -48,6 +53,7 @@ class ImageCaptioner:
         self.caption                   = ""
 
     def set_enabled_flag(self, enabled_flag: bool) -> None:
+        """Set the enabled flag for the captioner"""
         self.enabled_flag = enabled_flag
         if enabled_flag and not self.model_loaded.is_set():
             self.load_multi_modal_model_background()
@@ -107,22 +113,22 @@ class ImageCaptioner:
             self.model           = BlipForConditionalGeneration.from_pretrained(
                                         self.model_id_path,
                                         low_cpu_mem_usage   = True,
-                                        quantization_config = self.bnb_config, 
+                                        quantization_config = self.bnb_config,
                                         torch_dtype         = torch.float16,
                                         #device_map          = 'auto', Dosen not work for BLIP!
                                         )
-            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, torch_dtype=torch.bfloat16) #, device_map='auto') 
+            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, torch_dtype=torch.bfloat16) #, device_map='auto')
         elif self.target_model == "molmo":
             self.model_id_path   = self.molmo_model_id_path
             self.model           = AutoModelForCausalLM.from_pretrained(
-                                        self.model_id_path, 
+                                        self.model_id_path,
                                         trust_remote_code   = True,
                                         low_cpu_mem_usage   = True,
                                         torch_dtype         = torch.bfloat16, #'auto',
                                         device_map          = 'auto',
-                                        #quantization_config = self.bnb_config, 
+                                        #quantization_config = self.bnb_config,
                                         )
-            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map='auto') 
+            self.image_processor = AutoProcessor.from_pretrained(self.model_id_path, trust_remote_code=True, torch_dtype=torch.bfloat16, device_map='auto')
         else:
             debug_print(f"Invalid model type selected: {self.target_model}")
             return
@@ -135,6 +141,7 @@ class ImageCaptioner:
         self.model_loaded.wait()
 
     def set_user_prompt(self, user_prompt):
+        """Set the user prompt for the caption"""
         self.user_prompt = user_prompt
         self.generate_prompt_txt()
 
@@ -150,7 +157,7 @@ class ImageCaptioner:
             file_name = self.image_tools.get_file_name()
             dir_name  = self.image_tools.get_dir_name()
 
-        self.image_to_caption = self.image_tools.get_down_sampled_image(512, smallest_side=False, convert2RGB = False)  
+        self.image_to_caption = self.image_tools.get_down_sampled_image(512, smallest_side=False, convert2RGB = False)
         debug_print(f"Image type: {type(self.image_to_caption)}")
 
         debug_print(f"Processing image. Size: {self.image_to_caption.width}x{self.image_to_caption.height}")
@@ -173,7 +180,7 @@ class ImageCaptioner:
             inputs                = {k: v.to(self.model.device).unsqueeze(0) for k, v in inputs.items()}
 
 
-            
+
         debug_print(f"Input generated inputs length: {len(inputs)}")
 
         if self.target_model == "llava":
@@ -207,12 +214,12 @@ class ImageCaptioner:
                                             )
         elif self.target_model == "molmo":
             with torch.autocast("cuda", enabled=True, dtype=torch.bfloat16):
-                generated_tokens = self.model.generate_from_batch( 
+                generated_tokens = self.model.generate_from_batch(
                                             batch              = inputs,  # Pass 'inputs' as the 'batch' argument
                                             #max_new_tokens     = self.max_num_tokens,
                                             #repetition_penalty = 1.5,
                                             tokenizer          = self.image_processor.tokenizer,
-                                            generation_config  = GenerationConfig(max_new_tokens=self.max_num_tokens, stop_strings="<|endoftext|>"),            
+                                            generation_config  = GenerationConfig(max_new_tokens=self.max_num_tokens, stop_strings="<|endoftext|>"),
                                         )
         debug_print(f"Number of generated tokens: {len(generated_tokens[0])}")
 
@@ -237,7 +244,7 @@ class ImageCaptioner:
 
         return self.caption
 
-  
+
     def save_caption(self, image_path: Union[str, os.PathLike]) -> str:
         """Saves the caption with the same filename as the image and a .txt extension."""
         caption_path = Path(image_path).with_suffix('.txt')
@@ -251,15 +258,15 @@ class ImageCaptioner:
         """
         Sets the caption model type based on user selection.
         """
-        
+
         model_type   = model_type.lower()   # put modeltype to lower case
-        
-        
+
+
         if model_type not in ImageCaptioner.valid_models:
             debug_print(f"Invalid model type selected: {model_type}")
             return
-        
+
         self.target_model = model_type
         debug_print(f"Caption model set to: {model_type}")
-        
+
 

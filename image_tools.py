@@ -17,6 +17,7 @@ class ImageTools:
     pil_max_pix: int = Image.MAX_IMAGE_PIXELS
 
     def __init__(self):
+        """Initializes the ImageTools class."""
         self.clear_image_data()
 
 

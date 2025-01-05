@@ -12,6 +12,7 @@ from   caption         import ImageCaptioner
 from   utils           import debug_print
 
 def gradio_interface() -> None:
+    """Creates the Gradio interface for the image batch downsampler and captioner."""
 
     image_dataset_handler = DatasetHandler()
     image_captioner       = image_dataset_handler.image_captioner
@@ -78,6 +79,7 @@ def gradio_interface() -> None:
             remaining_images       = gr.Textbox(label="Remaining number of images to treat",    value="0")
 
         def update_file_count(selected_files: List[str]) -> Tuple[int, int, int, Any, str, str]:
+            """Updates the file count and displays the first image."""
             image_dataset_handler.set_file_list(selected_files)
             count = len(image_dataset_handler.file_list)
             if count > 0:
@@ -86,6 +88,7 @@ def gradio_interface() -> None:
             return 0, 0, 0, None, "", ""
 
         def browse_image(index: int) -> Tuple[Any, str, str, float, float, float, float, Any]:
+            """Browse the image at the given index."""
             image, size, caption = image_dataset_handler.load_image_at_index(index)
             crop_values          = image_dataset_handler.get_crop_values_at_index(index)
             updated_image        = update_crop_preview(index, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
@@ -126,7 +129,7 @@ def gradio_interface() -> None:
 
 
         def next_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
-            # Save crop of current image before moving
+            """ Save crop of current image before moving """
 
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
@@ -135,7 +138,7 @@ def gradio_interface() -> None:
             return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
-            # Save crop of current image before moving
+            """ Save crop of current image before moving """
 
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
@@ -144,6 +147,7 @@ def gradio_interface() -> None:
             return prev_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def toggle_caption_prompt(checkbox: bool) -> gr.update:
+            """Toggle the caption prompt visibility."""
             image_dataset_handler.set_image_captioner_enabled_flag(checkbox)
             image_dataset_handler.set_caption_prompt(caption_prompt.value)
             image_dataset_handler.set_postfix_string(postfix_string.value)
@@ -156,6 +160,7 @@ def gradio_interface() -> None:
 
 
         def set_caption_model(model_type: str) -> None:
+            """Set the caption model type."""
             image_captioner.set_caption_model(model_type)
 
         file_explorer.change(
@@ -263,6 +268,7 @@ def gradio_interface() -> None:
         #)
 
         def update_console(message):
+            """Update the console output."""
             return message
 
         demo.load(lambda: "", outputs=[console_output])
@@ -270,4 +276,5 @@ def gradio_interface() -> None:
     demo.launch(share=False)
 
 if __name__ == "__main__":
+    """Main entry point for the application."""
     gradio_interface()
