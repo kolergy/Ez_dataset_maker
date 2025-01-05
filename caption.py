@@ -5,7 +5,6 @@ import time
 import torch
 import os
 import threading
-import torch
 
 from   base64       import b64encode
 from   typing       import List, Union

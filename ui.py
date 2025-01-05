@@ -91,10 +91,10 @@ def gradio_interface() -> None:
             """Browse the image at the given index."""
             image, size, caption = image_dataset_handler.load_image_at_index(index)
             crop_values          = image_dataset_handler.get_crop_values_at_index(index)
-            updated_image        = update_crop_preview(index, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            updated_image        = update_crop_preview(index, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
             return image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
-        def update_crop_preview(index: int, x_start, x_end, y_start, y_end, code_triggered_flag=False):
+        def update_crop_preview(index: int, x_start, x_end, y_start, y_end):
             """Update the crop preview overlay"""
             #if not code_triggered_flag:
             if x_start > x_end: # Swap values if start is greater than end
@@ -134,7 +134,7 @@ def gradio_interface() -> None:
             next_idx = min(current_idx + 1, len(image_dataset_handler.file_list) - 1)
             image, size, caption = image_dataset_handler.load_image_at_index(next_idx)
             crop_values          = image_dataset_handler.get_crop_values_at_index(next_idx)
-            updated_image        = update_crop_preview(next_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            updated_image        = update_crop_preview(next_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
             return next_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def prev_image(current_idx: int, x_start: float, x_end: float, y_start: float, y_end: float) -> Tuple[int, Any, str, str, float, float, float, float, Any]:
@@ -143,7 +143,7 @@ def gradio_interface() -> None:
             prev_idx = max(current_idx - 1, 0)
             image, size, caption = image_dataset_handler.load_image_at_index(prev_idx)
             crop_values          = image_dataset_handler.get_crop_values_at_index(prev_idx)
-            updated_image        = update_crop_preview(prev_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], code_triggered_flag=True)
+            updated_image        = update_crop_preview(prev_idx, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"])
             return prev_idx, image, size, caption, crop_values["min_x"], crop_values["max_x"], crop_values["min_y"], crop_values["max_y"], updated_image
 
         def toggle_caption_prompt(checkbox: bool) -> gr.update:
@@ -202,22 +202,22 @@ def gradio_interface() -> None:
 
         # Wire up crop boundary preview updates
         x_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end),
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         x_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end),
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         y_start_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end),
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
         y_end_slider.change(
-            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end, code_triggered_flag),
+            fn=lambda index, x_start, x_end, y_start, y_end, code_triggered_flag: update_crop_preview(index, x_start, x_end, y_start, y_end),
             inputs=[current_index, x_start_slider, x_end_slider, y_start_slider, y_end_slider, gr.State(False)],
             outputs=[current_image_display]
         )
@@ -249,23 +249,11 @@ def gradio_interface() -> None:
 
             debug_print("Finished processing all files")
 
-        #def save_modified_caption(caption: str, file_list: List[str]) -> None:
-        #    if file_list and caption:
-        #        last_processed_image = file_list[-1]
-        #        ImageCaptioner.save_caption(last_processed_image, caption)
-
         start_button.click(
             fn=initiate_image_processing,
             inputs=[],
             outputs=[total_files, initial_images, remaining_images, caption_output, console_output, current_image_display, image_size_display, caption_text_display]
         )
-
-        #save_caption_button = gr.Button("Save Modified Caption")
-        #save_caption_button.click(
-        #    fn=save_modified_caption,
-        #    inputs=[caption_output, file_explorer],
-        #    outputs=[]
-        #)
 
         def update_console(message):
             """Update the console output."""
